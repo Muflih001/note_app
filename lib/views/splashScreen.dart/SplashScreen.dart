@@ -30,7 +30,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       body: Center(
-        child: Lottie.asset(AnimationConstants.spalsh_logo),
+        child: Lottie.asset(AnimationConstants.spalsh_logo2),
       ),
     );
   }
