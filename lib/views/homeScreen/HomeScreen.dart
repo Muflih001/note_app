@@ -190,10 +190,11 @@ class _HomescreenState extends State<Homescreen> {
                                             "description": description,
                                             "date": date
                                           });
+
                                           noteKeys = noteBox.keys.toList();
 
                                           Navigator.pop(context);
-                                          setState(() {});
+                                          _updateUI();
                                         }
                                       },
                                       child: Container(
@@ -266,6 +267,10 @@ class _HomescreenState extends State<Homescreen> {
           ),
         ));
   }
+
+  void _updateUI() {
+    setState(() {});
+  }
 }
 
 class Colourbox extends StatefulWidget {
@@ -278,81 +283,35 @@ class Colourbox extends StatefulWidget {
 }
 
 class _ColourboxState extends State<Colourbox> {
-  final FocusNode _focusNode1 = FocusNode();
-  final FocusNode _focusNode2 = FocusNode();
-  final FocusNode _focusNode3 = FocusNode();
-  final FocusNode _focusNode4 = FocusNode();
-
-  @override
-  void initState() {
-    super.initState();
-    _focusNode1.addListener(() {
-      setState(() {});
-    });
-    _focusNode2.addListener(() {
-      setState(() {});
-    });
-    _focusNode3.addListener(() {
-      setState(() {});
-    });
-    _focusNode4.addListener(() {
-      setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    _focusNode1.dispose();
-    _focusNode2.dispose();
-    _focusNode3.dispose();
-    _focusNode4.dispose();
-    super.dispose();
-  }
+  int? _selectedIndex;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(
-        4,
+        widget.colors.length,
         (index) {
-          FocusNode focusNode;
-          switch (index) {
-            case 0:
-              focusNode = _focusNode1;
-              break;
-            case 1:
-              focusNode = _focusNode2;
-              break;
-            case 2:
-              focusNode = _focusNode3;
-              break;
-            case 3:
-              focusNode = _focusNode4;
-              break;
-            default:
-              focusNode = _focusNode1;
-          }
-
           return Padding(
             padding: const EdgeInsets.all(8.0),
             child: InkWell(
-              focusNode: focusNode,
-              onFocusChange: (value) {
-                if (value == 1 && index < 2) {
-                  FocusScope.of(context).nextFocus();
-                }
+              onTap: () {
+                setState(() {
+                  _selectedIndex = index;
+                });
               },
               child: Container(
-                padding: focusNode.hasFocus
-                    ? const EdgeInsets.symmetric(vertical: 15)
-                    : const EdgeInsets.symmetric(vertical: 10),
-                width: focusNode.hasFocus ? 60 : 40,
-                height: focusNode.hasFocus ? 60 : 40,
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
-                    color: widget.colors[index],
-                    border: Border.all(color: Colors.black),
-                    borderRadius: BorderRadius.circular(10)),
+                  color: widget.colors[index],
+                  border: Border.all(
+                    color: _selectedIndex == index ? Colors.white : Colors.black,
+                    width: _selectedIndex == index ? 3 : 1,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
             ),
           );

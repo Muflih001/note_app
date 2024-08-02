@@ -28,6 +28,7 @@ class _NoteCardState extends State<NoteCard> {
 
   @override
   void initState() {
+    setState(() {});
     super.initState();
     _titleController = TextEditingController(text: widget.title);
     _descriptionController = TextEditingController(text: widget.description);
