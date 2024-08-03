@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:note_app/views/dummydb.dart';
+import 'package:note_app/views/homeScreen/HomeScreen.dart';
 import 'package:share_plus/share_plus.dart';
 
 class NoteCard extends StatefulWidget {
@@ -9,12 +11,16 @@ class NoteCard extends StatefulWidget {
     this.date = '',
     required this.onDelete,
     required this.onEdit,
+    this.bcolor,
+    this.onSwipe,
   });
   final void Function()? onDelete;
-  final void Function(String, String)? onEdit;
+  final void Function(String, String, Color?)? onEdit;
   final String title;
   final String description;
   final String date;
+  final Color? bcolor;
+  final void Function()? onSwipe;
 
   @override
   State<NoteCard> createState() => _NoteCardState();
@@ -25,6 +31,7 @@ class _NoteCardState extends State<NoteCard> {
   bool _isEditMode = false;
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
+  Color? _newColor;
 
   @override
   void initState() {
@@ -32,6 +39,7 @@ class _NoteCardState extends State<NoteCard> {
     super.initState();
     _titleController = TextEditingController(text: widget.title);
     _descriptionController = TextEditingController(text: widget.description);
+    _newColor = widget.bcolor;
   }
 
   @override
@@ -44,7 +52,7 @@ class _NoteCardState extends State<NoteCard> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10.0),
+      padding: const EdgeInsets.only(bottom: 10.0, left: 10, right: 10),
       child: InkWell(
         onTap: () {
           setState(() {
@@ -59,7 +67,8 @@ class _NoteCardState extends State<NoteCard> {
           width: double.infinity,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: Colors.amber[100]),
+              color:
+                  _isEditMode ? _newColor : widget.bcolor ?? Colors.amber[100]),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -70,7 +79,7 @@ class _NoteCardState extends State<NoteCard> {
                       ? SizedBox(
                           width: 250,
                           child: TextFormField(
-                            maxLines: 1,
+                            maxLines: null,
                             controller: _titleController,
                             decoration: const InputDecoration(
                               labelText: 'Title',
@@ -79,6 +88,8 @@ class _NoteCardState extends State<NoteCard> {
                         )
                       : Text(
                           widget.title,
+                          maxLines: _isExpanded ? null : 1,
+                          overflow: _isExpanded ? null : TextOverflow.ellipsis,
                           style: const TextStyle(
                               fontSize: 28, fontWeight: FontWeight.w600),
                         ),
@@ -89,7 +100,7 @@ class _NoteCardState extends State<NoteCard> {
                           if (_isEditMode) {
                             // Save the changes
                             widget.onEdit!(_titleController.text,
-                                _descriptionController.text);
+                                _descriptionController.text, _newColor);
                             setState(() {
                               _isEditMode = false;
                             });
@@ -126,8 +137,19 @@ class _NoteCardState extends State<NoteCard> {
                       ),
               ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  _isEditMode
+                      ? Colourbox(
+                          onColourSelected: (index) {
+                            setState(() {
+                              _newColor = DummyDB.noteColors[index];
+                            });
+                          },
+                          height: 20.0,
+                          width: 20.0,
+                        )
+                      : const SizedBox(),
                   Row(
                     children: [
                       Text(

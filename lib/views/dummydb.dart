@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class DummyDB {
   static final List<String> _titles = [];
   static final List<String> _descriptions = [];
@@ -20,4 +22,13 @@ class DummyDB {
   static List<String> getDates() {
     return _dates;
   }
+
+  static List<Color> noteColors = [
+    Colors.red.shade300,
+    Colors.lightGreenAccent,
+    Colors.amber.shade200,
+    Colors.cyan.shade200,
+    Colors.white,
+    Colors.deepOrange.shade300
+  ];
 }
