@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:note_app/utils/constants/animations.dart';
-import 'package:note_app/views/homeScreen/HomeScreen.dart';
+
+import 'package:note_app/views/usernameScreen/usernameScreen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen> {
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => const Homescreen(),
+              builder: (context) => UsernameScreen(),
             ));
       },
     );

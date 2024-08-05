@@ -146,8 +146,8 @@ class _NoteCardState extends State<NoteCard> {
                               _newColor = DummyDB.noteColors[index];
                             });
                           },
-                          height: 20.0,
-                          width: 20.0,
+                          height: 18.0,
+                          width: 18.0,
                         )
                       : const SizedBox(),
                   Row(

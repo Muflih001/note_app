@@ -172,8 +172,8 @@ class _HomescreenState extends State<Homescreen> {
                                       _selectedIndex = index;
                                     });
                                   },
-                                  height: 40.0,
-                                  width: 50.0,
+                                  height: 35.0,
+                                  width: 45.0,
                                 ),
                                 const SizedBox(
                                   height: 20,
