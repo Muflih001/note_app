@@ -79,6 +79,8 @@ class _NoteCardState extends State<NoteCard> {
                       ? SizedBox(
                           width: 250,
                           child: TextFormField(
+                            style: TextStyle(
+                                fontSize: 27, fontWeight: FontWeight.w500),
                             maxLines: null,
                             controller: _titleController,
                             decoration: const InputDecoration(
@@ -91,7 +93,7 @@ class _NoteCardState extends State<NoteCard> {
                           maxLines: _isExpanded ? null : 1,
                           overflow: _isExpanded ? null : TextOverflow.ellipsis,
                           style: const TextStyle(
-                              fontSize: 28, fontWeight: FontWeight.w600),
+                              fontSize: 27, fontWeight: FontWeight.w500),
                         ),
                   Row(
                     children: [
@@ -114,8 +116,34 @@ class _NoteCardState extends State<NoteCard> {
                         icon: Icon(_isEditMode ? Icons.save : Icons.edit),
                       ),
                       IconButton(
-                          onPressed: widget.onDelete,
-                          icon: const Icon(Icons.delete)),
+                          onPressed: () {
+                            // Show a dialog to confirm deletion
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text('Delete Note'),
+                                content: Text(
+                                    'Are you sure you want to delete this note?'),
+                                actions: [
+                                  TextButton(
+                                    child: Text('Cancel'),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: Text('Delete'),
+                                    onPressed: () {
+                                      // Delete the note from the database or list
+                                      widget.onDelete!(); // Update the UI
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          icon: Icon(Icons.delete)),
                     ],
                   ),
                 ],

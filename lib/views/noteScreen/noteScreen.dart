@@ -71,14 +71,14 @@ class _NoteScreenState extends State<NoteScreen> {
                             Navigator.pop(context);
                           },
                           child: Container(
-                            height: 52,
-                            width: 52,
+                            height: 50,
+                            width: 50,
                             decoration: BoxDecoration(
                                 color: Color.fromARGB(118, 158, 158, 158),
                                 borderRadius: BorderRadius.circular(30)),
                             child: Icon(
                               Icons.keyboard_arrow_left,
-                              size: 40,
+                              size: 35,
                             ),
                           )),
                       Spacer(),
@@ -106,10 +106,9 @@ class _NoteScreenState extends State<NoteScreen> {
                             },
                             icon: Icon(_isEditMode ? Icons.save : Icons.edit),
                           ),
-                          IconButton(
-                            onPressed: widget.onDelete,
-                            icon: Icon(Icons.delete),
-                          ),
+                          SizedBox(
+                            width: 10,
+                          )
                         ],
                       ),
                     ],
@@ -184,7 +183,7 @@ class _NoteScreenState extends State<NoteScreen> {
             ),
             Positioned(
               bottom: 1,
-              left: 10,
+              // left: 10,
               right: 10,
               child: Padding(
                 padding: const EdgeInsets.only(

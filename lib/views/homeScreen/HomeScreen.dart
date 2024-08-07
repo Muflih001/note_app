@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:note_app/utils/appSessions.dart';
@@ -8,13 +10,16 @@ import 'package:note_app/views/homeScreen/widgets/noteCard.dart';
 import 'package:note_app/views/noteScreen/noteScreen.dart';
 
 class Homescreen extends StatefulWidget {
-  const Homescreen({super.key});
+  const Homescreen({
+    super.key,
+  });
 
   @override
   State<Homescreen> createState() => _HomescreenState();
 }
 
 class _HomescreenState extends State<Homescreen> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _titleController = TextEditingController();
   final _dateController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -22,19 +27,37 @@ class _HomescreenState extends State<Homescreen> {
   var noteBox = Hive.box(AppSessions.NOTEBOX);
   List noteKeys = [];
   int? _selectedIndex;
+  Uint8List? _profile;
+  String? _username;
+  var profileBox = Hive.box<dynamic>('profileBox');
+  void deleteAllNotes() {
+    noteBox.clear(); // Clear the Hive box
+    noteKeys.clear(); // Clear the note keys list
+    setState(() {}); // Update the UI
+  }
 
   @override
   void initState() {
     noteKeys = noteBox.keys.toList();
     setState(() {});
     super.initState();
+    _loadProfileAndUsername();
+  }
+
+  _loadProfileAndUsername() async {
+    _profile = profileBox.get('profile') as Uint8List?;
+    _username = profileBox.get('username') as String?;
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        key: _scaffoldKey,
         backgroundColor: Colors.black,
         floatingActionButton: FloatingActionButton(
+          shape: CircleBorder(),
+          backgroundColor: Colors.grey[800],
           onPressed: () {
             _dateController.clear();
             _titleController.clear();
@@ -42,7 +65,7 @@ class _HomescreenState extends State<Homescreen> {
             _selectedIndex = 0;
 
             showModalBottomSheet(
-              backgroundColor: Colors.grey[800],
+              backgroundColor: Colors.grey[900],
               isScrollControlled: true,
               context: context,
               builder: (context) => StatefulBuilder(
@@ -57,6 +80,9 @@ class _HomescreenState extends State<Homescreen> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
+                                SizedBox(
+                                  height: 10,
+                                ),
                                 TextFormField(
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
@@ -88,8 +114,8 @@ class _HomescreenState extends State<Homescreen> {
                                   height: 10,
                                 ),
                                 ConstrainedBox(
-                                  constraints:
-                                      const BoxConstraints(minHeight: 50),
+                                  constraints: const BoxConstraints(
+                                      minHeight: 50, maxHeight: 260),
                                   child: TextFormField(
                                     maxLines: null,
                                     controller: _descriptionController,
@@ -178,59 +204,65 @@ class _HomescreenState extends State<Homescreen> {
                                 const SizedBox(
                                   height: 20,
                                 ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    InkWell(
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: Container(
-                                        height: 40,
-                                        width: 150,
-                                        decoration: BoxDecoration(
-                                          color: Colors.red,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        child:
-                                            const Center(child: Text('Cancel')),
-                                      ),
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        if (_formKey.currentState!.validate()) {
-                                          final title = _titleController.text;
-                                          final description =
-                                              _descriptionController.text;
-                                          final date = _dateController.text;
-                                          noteBox.add({
-                                            "title": title,
-                                            "description": description,
-                                            "date": date,
-                                            "colorIndex": _selectedIndex ?? 0,
-                                          });
-
-                                          noteKeys = noteBox.keys.toList();
-
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 5.0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      InkWell(
+                                        onTap: () {
                                           Navigator.pop(context);
-                                          _updateUI();
-                                        }
-                                      },
-                                      child: Container(
-                                        height: 40,
-                                        width: 150,
-                                        decoration: BoxDecoration(
-                                          color: Colors.green,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
+                                        },
+                                        child: Container(
+                                          height: 40,
+                                          width: 150,
+                                          decoration: BoxDecoration(
+                                            color: Colors.red,
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          child: const Center(
+                                              child: Text('Cancel')),
                                         ),
-                                        child:
-                                            const Center(child: Text('Save')),
                                       ),
-                                    ),
-                                  ],
+                                      Spacer(),
+                                      InkWell(
+                                        onTap: () {
+                                          if (_formKey.currentState!
+                                              .validate()) {
+                                            final title = _titleController.text;
+                                            final description =
+                                                _descriptionController.text;
+                                            final date = _dateController.text;
+                                            noteBox.add({
+                                              "title": title,
+                                              "description": description,
+                                              "date": date,
+                                              "colorIndex": _selectedIndex ?? 0,
+                                            });
+
+                                            noteKeys = noteBox.keys.toList();
+
+                                            Navigator.pop(context);
+                                            _updateUI();
+                                          }
+                                        },
+                                        child: Container(
+                                          height: 40,
+                                          width: 150,
+                                          decoration: BoxDecoration(
+                                            color: Colors.green,
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          child:
+                                              const Center(child: Text('Save')),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 )
                               ],
                             ),
@@ -239,19 +271,129 @@ class _HomescreenState extends State<Homescreen> {
                       )),
             );
           },
-          child: const Icon(Icons.add),
+          child: const Icon(
+            Icons.edit_note_sharp,
+            size: 30,
+            color: Color.fromRGBO(230, 81, 0, 1),
+          ),
+        ),
+        endDrawer: Drawer(
+          backgroundColor: Colors.grey[900],
+          child: SafeArea(
+            child: Column(
+              children: [
+                ListTile(
+                  iconColor: Colors.white,
+                  textColor: Colors.white,
+                  leading: Icon(Icons.home),
+                  title: Text('Home'),
+                  onTap: () {
+                    // Handle home tap
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  iconColor: Colors.white,
+                  textColor: Colors.white,
+                  leading: Icon(Icons.settings),
+                  title: Text('Settings'),
+                  onTap: () {
+                    // Handle settings tap
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  iconColor: Colors.white,
+                  textColor: Colors.white,
+                  leading: Icon(Icons.delete),
+                  title: Text('Delete All Notes'),
+                  onTap: () {
+                    // Handle logout tap
+                    deleteAllNotes();
+                  },
+                ),
+                ListTile(
+                  iconColor: Colors.white,
+                  textColor: Colors.white,
+                  leading: Icon(Icons.help),
+                  title: Text('Help'),
+                  onTap: () {
+                    // Handle help tap
+                    Navigator.pop(context);
+                  },
+                ),
+                Spacer(),
+                ListTile(
+                  iconColor: Colors.white,
+                  textColor: Colors.white,
+                  leading: Icon(Icons.logout),
+                  title: Text('Logout'),
+                  onTap: () {
+                    // Handle logout tap
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ),
         ),
         body: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Container(
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 15,
+                    ),
+                    CircleAvatar(
+                      radius: 25,
+                      backgroundImage: _profile != null
+                          ? MemoryImage(_profile!)
+                          : AssetImage(ImageConstants.avatar),
+                    ),
+                    SizedBox(width: 10),
+                    Text(
+                      "Hi, $_username" ?? "UserName",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500),
+                    ),
+                    Spacer(),
+                    InkWell(
+                      onTap: () {
+                        if (_scaffoldKey.currentState != null) {
+                          _scaffoldKey.currentState!.openEndDrawer();
+                        }
+                      },
+                      child: Container(
+                        height: 50,
+                        width: 50,
+                        decoration: BoxDecoration(
+                            color: const Color.fromARGB(139, 66, 66, 66),
+                            borderRadius: BorderRadius.circular(30)),
+                        child: Icon(
+                          Icons.menu,
+                          size: 30,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                  ],
+                ),
+              ),
               Padding(
-                padding: const EdgeInsets.only(left: 30.0, top: 30, bottom: 30),
+                padding: const EdgeInsets.only(left: 15.0, top: 30, bottom: 30),
                 child: Text(
                   "My Notes",
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 34,
+                    fontSize: 38,
                   ),
                 ),
               ),

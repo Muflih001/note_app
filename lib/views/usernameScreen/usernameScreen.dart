@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+
 import 'package:note_app/utils/constants/animations.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:hive/hive.dart';
@@ -16,8 +17,9 @@ class UsernameScreen extends StatefulWidget {
 
 class _UsernameScreenState extends State<UsernameScreen> {
   File? _selectedImage;
-  Box _noteBox = Hive.box('noteBox');
+  var profileBox = Hive.box('profileBox');
   final _textController = TextEditingController();
+  
 
   @override
   Widget build(BuildContext context) {
@@ -120,10 +122,29 @@ class _UsernameScreenState extends State<UsernameScreen> {
 
   void _storeImageInNoteBox(File image) async {
     Uint8List imageBytes = await image.readAsBytes();
-    _noteBox.put('image', imageBytes);
+    profileBox.put('profile', imageBytes);
   }
 
   void _storeTextInNoteBox(String text) {
-    _noteBox.put('text', text);
+    profileBox.put('username', text);
+  }
+}
+
+class ProfileContainer extends StatelessWidget {
+  const ProfileContainer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Row(
+        children: [
+          CircleAvatar(),
+          Text(
+            'data',
+            style: TextStyle(color: Colors.white),
+          )
+        ],
+      ),
+    );
   }
 }
